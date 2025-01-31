@@ -2,6 +2,7 @@ import express, { Request, Response } from 'express';
 import dotenv from 'dotenv';
 import connect from './mongoDB/connect.js';
 import axios from 'axios';
+import saveWeatherData from './model/weather.js';
 
 import _code_local from './parse_api_code.js';
 import { ICodeCoordJson } from './types.js';
@@ -52,6 +53,7 @@ const testAPI = async () => {
   const result = await axios.get(url, { params });
 
   console.log(result.data.response.body.items.item);
+  saveWeatherData();
   return result.data;
 };
 
