@@ -1,36 +1,58 @@
 import express, { Request, Response } from 'express';
 import dotenv from 'dotenv';
-import mongoose from 'mongoose';
-// import { scheduleJob } from './scheduler';
+import connect from './mongoDB/connect.js';
+import axios from 'axios';
 
-dotenv.config();
+import _code_local from './parse_api_code.js';
+import { ICodeCoordJson } from './types.js';
+
+const code_local = _code_local as ICodeCoordJson[]; // 타입 정의는 유지
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.get('/', (req: Request, res: Response) => {
+dotenv.config();
+
+connect((error: Error) => {
+  if (error) {
+    console.error('DB 연결 중 에러 발생:', error);
+    // 서버를 종료시킬 수도 있습니다.
+    process.exit(1);
+  }
+});
+
+app.get('/', async (req: Request, res: Response) => {
   res.send('Hello World!');
 });
 
-// MongoDB 연결
-// mongoose
-//   .connect(process.env.MONGO_URI as string)
-//   .then(() => console.log('✅ MongoDB 연결 성공'))
-//   .catch(err => console.error('❌ MongoDB 연결 실패:', err));
-
-// API 라우트
-// app.get('/data', async (req: Request, res: Response) => {
-//   try {
-//     const data = await mongoose.connection.db.collection('apidatas').find().sort({ timestamp: -1 }).limit(1).toArray();
-//     res.json(data);
-//   } catch (error) {
-//     res.status(500).json({ error: '데이터 조회 실패' });
-//   }
-// });
-
-// 크론 스케줄 실행
-// scheduleJob();
+// 에러 처리 미들웨어
+app.use((err: Error, req: Request, res: Response) => {
+  console.error(err);
+  res.status(500).send('Something went wrong');
+});
 
 app.listen(PORT, () => {
   console.log(`🚀 서버가 ${PORT}번 포트에서 실행 중`);
 });
+
+const testAPI = async () => {
+  const ncstURL = 'https://apis.data.go.kr/1360000/VilageFcstInfoService_2.0';
+  const url = ncstURL + '/getUltraSrtNcst';
+
+  const ncstKey = process.env.NCST_KEY;
+  const params = {
+    serviceKey: ncstKey,
+    dataType: 'JSON',
+    base_date: '20250131',
+    base_time: '0600',
+    numOfRows: '1000',
+    nx: 55,
+    ny: 127,
+  };
+  const result = await axios.get(url, { params });
+
+  console.log(result.data.response.body.items.item);
+  return result.data;
+};
+
+testAPI();
