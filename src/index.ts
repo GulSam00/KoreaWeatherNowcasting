@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 import connect from './mongoDB/connect.js';
 import axios from 'axios';
 import saveWeatherData from './model/weather.js';
-
+import { format } from 'date-fns';
 import _code_local from './parse_api_code.js';
 import { ICodeCoordJson } from './types.js';
 
@@ -39,21 +39,26 @@ app.listen(PORT, () => {
 const testAPI = async () => {
   const ncstURL = 'https://apis.data.go.kr/1360000/VilageFcstInfoService_2.0';
   const url = ncstURL + '/getUltraSrtNcst';
-
+  const today = new Date();
+  const base_date = format(today, 'yyyyMMdd');
+  const base_time = format(today, 'HH00');
   const ncstKey = process.env.NCST_KEY;
   const params = {
     serviceKey: ncstKey,
     dataType: 'JSON',
-    base_date: '20250131',
-    base_time: '0600',
+    base_date,
+    base_time,
     numOfRows: '1000',
     nx: 55,
     ny: 127,
+    localeCode: 0,
   };
   const result = await axios.get(url, { params });
-
-  console.log(result.data.response.body.items.item);
   saveWeatherData();
+
+  // params.localeCode = getLocaleCode(params.nx, params.ny);
+
+  // console.log(result.data.response?.body?.items.item);
   return result.data;
 };
 

@@ -14,7 +14,9 @@ const connect = async (next: Function) => {
   }
 
   try {
-    await mongoose.connect(url);
+    await mongoose.connect(url, {
+      dbName: 'korea_weather',
+    });
     console.log('MongoDB 연결 성공');
   } catch (error) {
     console.error('MongoDB 연결 실패:', error);

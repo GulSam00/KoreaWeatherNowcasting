@@ -61,7 +61,7 @@ const saveWeatherData = async () => {
     .catch(err => console.error('저장 실패:', err));
 
   const result = await WeatherModel.find();
-  console.log('저장된 데이터:', result);
+  // console.log('저장된 데이터:', result);
 };
 
 export default saveWeatherData;
