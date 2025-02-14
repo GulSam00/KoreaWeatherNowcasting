@@ -1,26 +1,11 @@
-import mongoose, { Schema, Document } from 'mongoose';
+import mongoose, { Schema } from 'mongoose';
 
-import { ICodeCoordJson } from '../types.js';
-
-interface NowcastResult {
-  weatherType: string;
-  weatherTypeCode: string;
-  obsrValue: number;
-}
-
-interface IWeatherData extends Document {
-  baseDate: string;
-  baseTime: string;
-  localeCode: number;
-  nx: number;
-  ny: number;
-  result: NowcastResult[];
-}
+import { NowcastResult, IWeatherData } from '../types.js';
 
 const ResultSchema = new Schema<NowcastResult>({
-  weatherType: String,
-  weatherTypeCode: String,
-  obsrValue: Number,
+  weatherType: String, // 한글 이름 (예: "기온")
+  weatherTypeCode: String, // 코드 (예: "T1H")
+  obsrValue: String, // 해당 값 (예: 25.3)
 });
 
 const WeatherSchema = new Schema<IWeatherData>({
@@ -34,34 +19,20 @@ const WeatherSchema = new Schema<IWeatherData>({
 
 const WeatherModel = mongoose.model<IWeatherData>('WeatherData', WeatherSchema);
 
-const saveWeatherData = async () => {
+export const saveWeatherData = async ({ baseDate, baseTime, localeCode, nx, ny, result }: IWeatherData) => {
   const newModel = new WeatherModel({
-    baseDate: '20241023',
-    baseTime: '2100',
-    localeCode: 112,
-    nx: 56,
-    ny: 112,
-    result: [
-      {
-        weatherType: '비',
-        weatherTypeCode: 'RN1',
-        obsrValue: 62,
-      },
-      {
-        weatherType: '흐림',
-        weatherTypeCode: 'REH',
-        obsrValue: 62,
-      },
-    ],
+    baseDate,
+    baseTime,
+    localeCode,
+    nx,
+    ny,
+    result,
   });
 
   newModel
     .save()
     .then(() => console.log('새로운 날씨 데이터 저장 완료'))
     .catch(err => console.error('저장 실패:', err));
-
-  const result = await WeatherModel.find();
-  // console.log('저장된 데이터:', result);
 };
 
 export default saveWeatherData;

@@ -16,7 +16,6 @@ export interface GetParamsByCodeRequest {
 export interface GetNcstRequest {
   x: number;
   y: number;
-  ncstKey: string;
 }
 
 export interface GetKakaoNcstRequest {
@@ -36,3 +35,19 @@ interface WeatherData {
 }
 
 export type GetNcstResponseTypes = WeatherData[];
+
+// src/model/weather.ts
+export interface NowcastResult {
+  weatherType: string;
+  weatherTypeCode: string;
+  obsrValue: string;
+}
+
+export interface IWeatherData {
+  baseDate: string;
+  baseTime: string;
+  localeCode: number;
+  nx: number;
+  ny: number;
+  result: NowcastResult[];
+}
