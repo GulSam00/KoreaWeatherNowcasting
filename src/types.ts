@@ -46,8 +46,8 @@ export interface NowcastResult {
 export interface IWeatherData {
   baseDate: string;
   baseTime: string;
-  localeCode: number;
-  nx: number;
-  ny: number;
-  result: NowcastResult[];
+  localeCode?: number;
+  nx?: number;
+  ny?: number;
+  result?: NowcastResult[];
 }

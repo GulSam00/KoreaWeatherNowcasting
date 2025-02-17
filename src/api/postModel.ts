@@ -1,7 +1,7 @@
-import { saveWeatherData } from './model/weather.js';
+import { postWeatherData, getWeatherData } from '../model/weather.js';
 import { getNcst, getParamsByCode } from './getExactNcst.js';
 
-import { NowcastResult, IWeatherData } from './types.js';
+import { NowcastResult, IWeatherData } from '../types.js';
 
 const parsePTY = (value: string) => {
   switch (value) {
@@ -36,16 +36,18 @@ const categoryList: { [key: string]: string } = {
 };
 
 const postModel = async ({ code, dong }: { code: number; dong?: string }) => {
-  // 중복 체크, 중복이면 localeCode만 교체해서 Save, API 요청 횟수 줄이기
-  // let  dup = await WeatherModel.findOne({ baseDate, baseTime, nx, ny });
-  // if (dup) {
-  //   console.log('이미 존재하는 데이터입니다.');
-  //   console.log(dup);
-  // }
-
   const result = await getNcst(getParamsByCode({ code, dong }));
-  if (!result || !result[0]) return;
+  if (!result || !result[0]) return 'fail';
   const { baseDate, baseTime, nx, ny } = result[0];
+
+  // 중복 체크, 중복이면 localeCode만 교체해서 Save, API 요청 횟수 줄이기
+  const findData = await getWeatherData({ baseDate, baseTime, nx, ny });
+  if (findData) {
+    // console.log('중복 데이터 감지 - X : ', nx, 'Y : ', ny);
+    findData.localeCode = code;
+    await findData.save();
+    return 'dup';
+  }
 
   const nowCastResult: NowcastResult[] = result.map(item => {
     const { category, obsrValue } = item;
@@ -64,7 +66,9 @@ const postModel = async ({ code, dong }: { code: number; dong?: string }) => {
     ny,
     result: nowCastResult,
   };
-  saveWeatherData(weatherData);
+  postWeatherData(weatherData);
+
+  return 'save';
 };
 
 export default postModel;

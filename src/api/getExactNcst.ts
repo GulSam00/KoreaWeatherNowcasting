@@ -1,8 +1,8 @@
 import axios from 'axios';
 import { format, getMinutes, subHours } from 'date-fns';
 
-import _code_local from './parse_api_code.js';
-import { ICodeCoordJson, GetParamsByCodeRequest, GetNcstRequest, GetNcstResponseTypes } from './types.js';
+import _code_local from '../parse_api_code.js';
+import { ICodeCoordJson, GetParamsByCodeRequest, GetNcstRequest, GetNcstResponseTypes } from '../types.js';
 
 const code_local = _code_local as ICodeCoordJson[]; // 타입 정의는 유지
 const ncstURL = 'https://apis.data.go.kr/1360000/VilageFcstInfoService_2.0';

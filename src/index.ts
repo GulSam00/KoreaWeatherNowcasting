@@ -1,7 +1,7 @@
 import express, { Request, Response } from 'express';
 import dotenv from 'dotenv';
 import connect from './mongoDB/connect.js';
-import postModel from './postModel.js';
+import postModel from './api/postModel.js';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -30,8 +30,32 @@ app.listen(PORT, () => {
   console.log(`🚀 서버가 ${PORT}번 포트에서 실행 중`);
 });
 
-// baseDate / baseTime / code
+import _code_local from './parse_api_code.js';
+import { ICodeCoordJson } from './types.js';
 
-postModel({ code: 1100000000 });
-postModel({ code: 1111000000 });
-postModel({ code: 1111051500 });
+const code_local = _code_local as ICodeCoordJson[]; // 타입 정의는 유지
+
+async function sendRequests() {
+  let count = 0;
+  for (const item of code_local) {
+    const result = await postModel({ code: item.code }); // API 요청
+
+    switch (result) {
+      case 'fail': {
+        // console.log('API 요청 실패');
+      }
+      case 'dup': {
+        // console.log('중복 데이터 감지');
+      }
+      case 'save': {
+        console.log('새로운 데이터 저장 완료');
+        count++;
+      }
+      default: {
+      }
+    }
+  }
+  console.log('새로 저장된 데이터의 개수: ', count);
+}
+
+sendRequests(); // 함수 실행

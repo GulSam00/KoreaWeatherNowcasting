@@ -19,7 +19,7 @@ const WeatherSchema = new Schema<IWeatherData>({
 
 const WeatherModel = mongoose.model<IWeatherData>('WeatherData', WeatherSchema);
 
-export const saveWeatherData = async ({ baseDate, baseTime, localeCode, nx, ny, result }: IWeatherData) => {
+export const postWeatherData = async ({ baseDate, baseTime, localeCode, nx, ny, result }: IWeatherData) => {
   const newModel = new WeatherModel({
     baseDate,
     baseTime,
@@ -35,4 +35,8 @@ export const saveWeatherData = async ({ baseDate, baseTime, localeCode, nx, ny, 
     .catch(err => console.error('저장 실패:', err));
 };
 
-export default saveWeatherData;
+export const getWeatherData = async ({ baseDate, baseTime, nx, ny }: IWeatherData) => {
+  const result = await WeatherModel.findOne({ baseDate, baseTime, nx, ny });
+
+  return result;
+};
