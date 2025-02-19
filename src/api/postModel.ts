@@ -1,5 +1,6 @@
 import { postWeatherData, getWeatherData } from '../model/weather.js';
 import { getNcst, getParamsByCode } from './getExactNcst.js';
+import { format, getMinutes, subHours } from 'date-fns';
 
 import { NowcastResult, IWeatherData } from '../types.js';
 
@@ -36,18 +37,28 @@ const categoryList: { [key: string]: string } = {
 };
 
 const postModel = async ({ code, dong }: { code: number; dong?: string }) => {
-  const result = await getNcst(getParamsByCode({ code, dong }));
-  if (!result || !result[0]) return 'fail';
-  const { baseDate, baseTime, nx, ny } = result[0];
+  const codeParams = getParamsByCode({ code, dong });
+  const { x: nx, y: ny } = codeParams;
 
-  // 중복 체크, 중복이면 localeCode만 교체해서 Save, API 요청 횟수 줄이기
+  let date = new Date();
+
+  const baseDate = format(date, 'yyyyMMdd');
+  if (getMinutes(date) <= 10) date = subHours(date, 1);
+  const hour = format(date, 'HH');
+  const baseTime = hour + '00';
+
   const findData = await getWeatherData({ baseDate, baseTime, nx, ny });
   if (findData) {
-    // console.log('중복 데이터 감지 - X : ', nx, 'Y : ', ny);
-    findData.localeCode = code;
-    await findData.save();
+    console.log('중복 데이터 감지 - X : ', nx, 'Y : ', ny);
+    // 굳이 중복된 데이터를 code만 다르게 해서 저장해야 하나? 요청 올 때 nx, ny 맞는 거 있으면 그거 전달해주면 되잖아.
+    // findData.localeCode = code;
+    // await findData.save();
     return 'dup';
   }
+
+  // 이 시점(API 요청) 전에 중복을 구분해야 함.
+  const result = await getNcst({ x: nx, y: ny, baseDate, baseTime });
+  if (!result || !result[0]) return 'fail';
 
   const nowCastResult: NowcastResult[] = result.map(item => {
     const { category, obsrValue } = item;
@@ -61,7 +72,7 @@ const postModel = async ({ code, dong }: { code: number; dong?: string }) => {
   const weatherData: IWeatherData = {
     baseDate,
     baseTime,
-    localeCode: code,
+    // localeCode: code,
     nx,
     ny,
     result: nowCastResult,

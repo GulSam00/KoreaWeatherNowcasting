@@ -18,7 +18,13 @@ export const getParamsByCode = ({ code, dong }: GetParamsByCodeRequest) => {
   return parsedLocal;
 };
 
-export const getNcst = async ({ x, y }: GetNcstRequest): Promise<GetNcstResponseTypes | undefined> => {
+// base_date, base_time 인자?
+export const getNcst = async ({
+  x,
+  y,
+  baseDate,
+  baseTime,
+}: GetNcstRequest): Promise<GetNcstResponseTypes | undefined> => {
   try {
     const ncstKey = process.env.NCST_KEY;
 

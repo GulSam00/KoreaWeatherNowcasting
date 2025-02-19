@@ -16,6 +16,8 @@ export interface GetParamsByCodeRequest {
 export interface GetNcstRequest {
   x: number;
   y: number;
+  baseDate: string;
+  baseTime: string;
 }
 
 export interface GetKakaoNcstRequest {
