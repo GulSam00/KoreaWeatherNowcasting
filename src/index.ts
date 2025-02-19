@@ -1,7 +1,6 @@
 import express, { Request, Response } from 'express';
 import dotenv from 'dotenv';
 import connect from './mongoDB/connect.js';
-import postModel from './api/postModel.js';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -20,6 +19,10 @@ app.get('/', async (req: Request, res: Response) => {
   res.send('Hello World!');
 });
 
+app.use(express.json());
+
+app.use();
+
 // 에러 처리 미들웨어
 app.use((err: Error, req: Request, res: Response) => {
   console.error(err);
@@ -29,43 +32,3 @@ app.use((err: Error, req: Request, res: Response) => {
 app.listen(PORT, () => {
   console.log(`🚀 서버가 ${PORT}번 포트에서 실행 중`);
 });
-
-import _code_local from './parse_api_code.js';
-import { ICodeCoordJson } from './types.js';
-
-const code_local = _code_local as ICodeCoordJson[]; // 타입 정의는 유지
-
-async function sendRequests() {
-  let i = 0;
-  let count = 0;
-  for (const item of code_local) {
-    // console.log('i : ', i);
-    // i++;
-
-    // if (i > 300) break;
-    const result = await postModel({ code: item.code }); // API 요청
-
-    switch (result) {
-      case 'fail': {
-        console.log('API 요청 실패');
-
-        break;
-      }
-      case 'dup': {
-        // console.log('중복 데이터 감지');
-        break;
-      }
-      case 'save': {
-        console.log('새로운 데이터 저장 완료');
-        count++;
-        break;
-      }
-      default: {
-      }
-    }
-  }
-  console.log('새로 저장된 데이터의 개수: ', count);
-  // 1800
-}
-
-sendRequests(); // 함수 실행
