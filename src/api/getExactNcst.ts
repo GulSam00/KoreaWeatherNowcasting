@@ -4,7 +4,8 @@ import _code_local from '../parse_api_code.js';
 import { ICodeCoordJson, GetParamsByCodeRequest, GetNcstRequest, GetNcstResponseTypes } from '../types.js';
 
 const code_local = _code_local as ICodeCoordJson[]; // 타입 정의는 유지
-const ncstURL = 'https://apis.data.go.kr/1360000/VilageFcstInfoService_2.0';
+const ncstURL = process.env.NCST_URL;
+const ncstKey = process.env.NCST_KEY;
 
 export const getParamsByCode = ({ code, dong }: GetParamsByCodeRequest) => {
   const parsedLocal = code_local.find(item => item.code === Number(code));
@@ -17,7 +18,6 @@ export const getParamsByCode = ({ code, dong }: GetParamsByCodeRequest) => {
   return parsedLocal;
 };
 
-// base_date, base_time 인자?
 export const getNcst = async ({
   x,
   y,
@@ -25,8 +25,6 @@ export const getNcst = async ({
   baseTime,
 }: GetNcstRequest): Promise<GetNcstResponseTypes | undefined> => {
   try {
-    const ncstKey = process.env.NCST_KEY;
-
     if (typeof x !== 'number' || typeof y !== 'number') throw new Error('x, y 자료형이 number가 아닙니다.');
     if (!ncstKey) throw new Error('ncstKey가 필요합니다.');
 

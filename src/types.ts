@@ -23,8 +23,6 @@ export interface GetNcstRequest {
 export interface GetKakaoNcstRequest {
   x: number;
   y: number;
-  kakaoKey: string;
-  ncstKey?: string;
 }
 
 interface WeatherData {
