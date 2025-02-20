@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { format, getMinutes, subHours } from 'date-fns';
 
 import _code_local from '../parse_api_code.js';
 import { ICodeCoordJson, GetParamsByCodeRequest, GetNcstRequest, GetNcstResponseTypes } from '../types.js';
@@ -42,12 +41,8 @@ export const getNcst = async ({
       ny: 0,
     };
 
-    let base_date = new Date();
-    const date = format(base_date, 'yyyyMMdd');
-    if (getMinutes(base_date) <= 10) base_date = subHours(base_date, 1);
-    const hour = format(base_date, 'HH');
-    params.base_date = date;
-    params.base_time = hour + '00';
+    params.base_date = baseDate;
+    params.base_time = baseTime;
     params.nx = x;
     params.ny = y;
 

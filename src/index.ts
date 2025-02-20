@@ -1,5 +1,6 @@
-import express, { Request, Response } from 'express';
+import express, { Request, Response, NextFunction } from 'express';
 import dotenv from 'dotenv';
+import router from './router.js';
 import connect from './mongoDB/connect.js';
 
 const app = express();
@@ -21,12 +22,12 @@ app.get('/', async (req: Request, res: Response) => {
 
 app.use(express.json());
 
-app.use();
+app.use(router);
 
 // 에러 처리 미들웨어
-app.use((err: Error, req: Request, res: Response) => {
+app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   console.error(err);
-  res.status(500).send('Something went wrong');
+  res.status(500).json({ status: 'error', message: '서버 오류가 발생했습니다.' });
 });
 
 app.listen(PORT, () => {
