@@ -4,7 +4,12 @@
   "description": "",
   "type": "module",
   "scripts": {
-    "dev": "node --import ./loader.mjs src/index.ts"
+    "dev": "node --import ./loader.mjs src/index.ts",
+    "build": "tsc",
+    "pm2-dev" : "pm2 start ecosystem.config.cjs --only korea-weather-nowcasting-dev",
+    "pm2-pro" : "pm2 start ecosystem.config.cjs --only korea-weather-nowcasting-pro",
+    "del": "pm2 delete all"
+
   },
   "author": "",
   "license": "ISC",
